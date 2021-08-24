@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"filestore-server/db"
 	"filestore-server/meta"
 	"filestore-server/util"
 	"fmt"
@@ -59,6 +60,9 @@ func UploadHandler(w http.ResponseWriter,r *http.Request)  {
 		fMeta.FileSha1 = util.FileSha1(newFile)
 		//meta.UploadFileMeta(fMeta)
 		meta.UpdateFileMetaDb(fMeta)
+
+		db.OnUserFileUploadFinish()
+
 		fmt.Println(fMeta)
 		http.Redirect(w,r,"/file/upload/success",http.StatusFound)
 	}
