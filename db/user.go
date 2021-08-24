@@ -34,7 +34,7 @@ func UserSignUp (username string,password string) bool{
 
 //用户登录
 func UserSignIn (username string,password string) bool {
-	sql := "SELECT * FROM `tb_user` WHERE `user_name` = ? LIMIT 1"
+	sql := "SELECT * FROM `tbl_user` WHERE `user_name` = ? LIMIT 1"
 	stmt,err := mysql.DbConn().Prepare(sql)
 	if err != nil {
 		fmt.Printf("UserSignIn stmt err:%s\n",err)
