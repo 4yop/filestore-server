@@ -106,12 +106,12 @@ func GenToken (username string) string {
 func UserInfoHandle (w http.ResponseWriter,r *http.Request) {
 	r.ParseForm()
 	username := r.Form.Get("username")
-	token := r.Form.Get("token")
-	if  db.CheckToken(username,token) == false {
-
-		w.Write([]byte("error"))
-		return
-	}
+	//token := r.Form.Get("token")
+	//if  db.CheckToken(username,token) == false {
+	//
+	//	w.Write([]byte("error"))
+	//	return
+	//}
 	user,err := db.GetByUsername(username)
 	if err != nil {
 		w.Write([]byte("error"))

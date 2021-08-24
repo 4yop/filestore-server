@@ -25,7 +25,8 @@ func main () {
 	http.HandleFunc("/static/view/signin.html",handler.SignInHandler)
 	http.HandleFunc("/static/view/home.html",handler.HomeHandler)
 
-	http.HandleFunc("/user/info",handler.UserInfoHandle)
+	http.HandleFunc("/user/info",handler.HTTPInterceptor(handler.UserInfoHandle))
+
 
 	err := http.ListenAndServe(":8080",nil)
 	if err != nil {

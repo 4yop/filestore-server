@@ -1,9 +1,24 @@
 package handler
 
-import "net/http"
+import (
+	"filestore-server/db"
+	"net/http"
+)
 
 //http 请求拦截器
-func HTTPInterceptor(f func(w http.ResponseWriter,r *http.Request)) (func(w http.ResponseWriter,r *http.Request)) {
-	
-	return f
+func HTTPInterceptor(h http.HandlerFunc)  http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		username := r.Form.Get("username")
+		token := r.Form.Get("token")
+
+		//验证登录token是否有效
+		if len(username) < 3 || !db.CheckToken(username,token) {
+			// w.WriteHeader(http.StatusForbidden)
+			// token校验失败则跳转到登录页面
+			http.Redirect(w, r, "/static/view/signin.html", http.StatusFound)
+			return
+		}
+		h(w, r)
+	})
 }
