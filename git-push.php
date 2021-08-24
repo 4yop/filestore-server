@@ -1,5 +1,8 @@
 <?php
 
-`git pull`;
-`git add -A && git commit -m 'study-go' && git push`;
-
+while (true)
+{
+    `git pull`;
+    `git add -A && git commit -m 'study-go' && git push`;
+    sleep(180);
+}
