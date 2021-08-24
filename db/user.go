@@ -105,7 +105,7 @@ func CheckToken(username string,token string) bool {
 		fmt.Printf("CheckToken Query rows == nil ",)
 		return false
 	}
-	return false
+	return true
 }
 
 type User struct {
