@@ -7,11 +7,11 @@ import (
 )
 
 type UserFile struct {
-	fileSha1 string
-	fileSize int64
-	fileName string
-	uploadAt string
-	lastUpdate string
+	FileSha1 string
+	FileSize int64
+	FileName string
+	UploadAt string
+	LastUpdate string
 }
 
 func OnUserFileUploadFinish (username string, fileSha1 string, fileSize int64, fileName string)bool {
@@ -47,10 +47,12 @@ func QueryUserFileMeta (username string,limit int) ([]UserFile,error) {
 		fmt.Printf(" QueryUserFileMeta stmt.Query err:%s\n",err)
 		return nil,err
 	}
+	
 	var userfiles []UserFile
 	for rows.Next() {
 		userfile := UserFile{}
-		err = rows.Scan(&userfile.fileSha1,&userfile.fileSize,&userfile.fileName,&userfile.uploadAt,&userfile.lastUpdate)
+		err = rows.Scan(&userfile.FileSha1,&userfile.FileSize,&userfile.FileName,&userfile.UploadAt,&userfile.LastUpdate)
+		fmt.Println(userfile)
 		if err != nil {
 			fmt.Printf(" QueryUserFileMeta rows.Scan err:%s\n",err)
 			return userfiles,err
