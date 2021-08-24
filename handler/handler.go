@@ -58,14 +58,19 @@ func UploadHandler(w http.ResponseWriter,r *http.Request)  {
 
 		newFile.Seek(0,0)
 		fMeta.FileSha1 = util.FileSha1(newFile)
+		fmt.Println(fMeta)
 		//meta.UploadFileMeta(fMeta)
 		meta.UpdateFileMetaDb(fMeta)
 		r.ParseForm()
 		username := r.Form.Get("username")
-		res := db.OnUserFileUploadFinish(username,fMeta.FileSha1,fMeta.FileSize,fMeta.FileName)
+		suc := db.OnUserFileUploadFinish(username,fMeta.FileSha1,fMeta.FileSize,fMeta.FileName)
+		if suc {
+			http.Redirect(w,r,"/file/upload/success",http.StatusFound)
+		}else{
+			w.Write([]byte("upload failed"))
+		}
 
-		fmt.Println(fMeta)
-		http.Redirect(w,r,"/file/upload/success",http.StatusFound)
+
 	}
 }
 
