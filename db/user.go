@@ -7,7 +7,7 @@ import (
 
 //用户注册
 func UserSignUp (username string,password string) bool{
-	sql := "INSERT INTO `tb_user`(`user_name`,`user_pw`) VALUES (?,?)"
+	sql := "INSERT INTO `tbl_user`(`user_name`,`user_pw`) VALUES (?,?)"
 	stmt,err := mysql.DbConn().Prepare(sql)
 	if err != nil {
 		fmt.Printf(" UserSignUp Prepare  err:%s\n",err)
