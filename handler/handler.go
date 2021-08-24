@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -139,4 +140,11 @@ func HomeHandler(w http.ResponseWriter,r *http.Request) {
 		fmt.Printf(" home handler ioutil.readfile err:%s\n",err)
 	}
 	w.Write(data)
+}
+
+func FileQueryHandler (w http.ResponseWriter,r *http.Request) {
+	r.ParseForm()
+	username := r.Form.Get("username")
+	limit, _ := strconv.Atoi(r.Form.Get("limit"))
+	db.QueryUserFileMeta(username,limit)
 }
