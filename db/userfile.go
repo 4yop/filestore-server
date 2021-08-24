@@ -34,7 +34,7 @@ func OnUserFileUploadFinish (username string, fileSha1 string, fileSize int64, f
 
 
 func QueryUserFileMeta (username string,limit int) []UserFile {
-	sql := "SELECT `user_name`,`file_sha1`,`file_size`,`file_name`,`upload_at`,`last_update` FROM `tbl_user_file` WHERE `user_name` = ? LIMIT ? "
+	sql := "SELECT `file_sha1`,`file_size`,`file_name`,`upload_at`,`last_update` FROM `tbl_user_file` WHERE `user_name` = ? LIMIT ? "
 	stmt,err := mysql.DbConn().Prepare(sql)
 	if err != nil {
 		fmt.Printf(" QueryUserFileMeta Prepare err:%s\n",err)
@@ -47,10 +47,15 @@ func QueryUserFileMeta (username string,limit int) []UserFile {
 		fmt.Printf(" QueryUserFileMeta stmt.Query err:%s\n",err)
 		return nil
 	}
-
+	var userfiles []UserFile
 	for rows.Next() {
 		userfile := UserFile{}
-		rows.Scan(&userfile)
+		err = rows.Scan(&userfile.fileSha1,&userfile.fileSize,&userfile.fileName,&userfile.uploadAt,&userfile.lastUpdate)
+		if err != nil {
+			fmt.Printf(" QueryUserFileMeta rows.Scan err:%s\n",err)
+			break
+		}
+		userfiles = append(userfiles, userfile)
 	}
-	
+	return userfiles
 }
