@@ -47,7 +47,7 @@ func QueryUserFileMeta (username string,limit int) ([]UserFile,error) {
 		fmt.Printf(" QueryUserFileMeta stmt.Query err:%s\n",err)
 		return nil,err
 	}
-	
+
 	var userfiles []UserFile
 	for rows.Next() {
 		userfile := UserFile{}

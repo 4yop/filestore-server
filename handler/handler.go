@@ -147,7 +147,7 @@ func FileQueryHandler (w http.ResponseWriter,r *http.Request) {
 	username := r.Form.Get("username")
 	limit, _ := strconv.Atoi(r.Form.Get("limit"))
 	userfiles,err := db.QueryUserFileMeta(username,limit)
-	fmt.Println(userfiles)
+	fmt.Println(150,userfiles)
 	if err != nil {
 		resp := util.NewRespMsg(0,fmt.Sprintf("%s",err),userfiles)
 		w.Write(resp.JSONBytes())
