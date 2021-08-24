@@ -6,6 +6,7 @@ import (
 	"fmt"
 )
 
+//更新用户文件表
 func OnFileUploadFinished(fileSha1 string, fileName string, fileSize int64, fileAddr string) bool {
 	sql := "INSERT INTO `tbl_file`(`file_sha1`,`file_name`,`file_size`,`file_addr`,`status`) VALUES (?,?,?,?,1)"
 	stmt,err := mysql.DbConn().Prepare(sql)

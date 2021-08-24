@@ -60,8 +60,9 @@ func UploadHandler(w http.ResponseWriter,r *http.Request)  {
 		fMeta.FileSha1 = util.FileSha1(newFile)
 		//meta.UploadFileMeta(fMeta)
 		meta.UpdateFileMetaDb(fMeta)
-
-		db.OnUserFileUploadFinish()
+		r.ParseForm()
+		username := r.Form.Get("username")
+		res := db.OnUserFileUploadFinish(username,fMeta.FileSha1,fMeta.FileSize,fMeta.FileName)
 
 		fmt.Println(fMeta)
 		http.Redirect(w,r,"/file/upload/success",http.StatusFound)
