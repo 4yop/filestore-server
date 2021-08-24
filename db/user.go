@@ -108,6 +108,8 @@ func CheckToken(username string,token string) bool {
 
 	//pRows := rows.Columns("user_pw")
 	pRows := mysql.ParseRows(rows)
+	fmt.Println(pRows)
+	fmt.Println(token)
 	if len(pRows) > 0 && string(pRows[0]["user_token"].([]byte)) == token {
 		return true
 	}
