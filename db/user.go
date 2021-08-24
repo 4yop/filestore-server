@@ -88,7 +88,7 @@ func UpdateToken(username string,token string) bool {
 
 //检查token
 func CheckToken(username string,token string) bool {
-	sql := "SELECT `user_name`,`user_token` FROM `tbl_token` WHERE `user_name` = ? LIMIT 1"
+	sql := "SELECT `user_name`,`user_token` FROM `tbl_token` WHERE `user_name` = ? AND  `user_token` = ? LIMIT 1"
 	stmt,err := mysql.DbConn().Prepare(sql)
 	if err != nil {
 		fmt.Printf("CheckToken Prepare err:%s\n",err)
@@ -96,7 +96,7 @@ func CheckToken(username string,token string) bool {
 	}
 
 	defer stmt.Close()
-	rows,err := stmt.Query(username)
+	rows,err := stmt.Query(username,token)
 	if err != nil {
 		fmt.Printf("CheckToken Query err:%s\n",err)
 		return false
@@ -105,17 +105,6 @@ func CheckToken(username string,token string) bool {
 		fmt.Printf("CheckToken Query rows == nil ",)
 		return false
 	}
-
-	//pRows := rows.Columns("user_pw")
-	pRows := mysql.ParseRows(rows)
-	fmt.Println(pRows[0])
-	fmt.Println(fmt.Println(pRows))
-	fmt.Println(token)
-	fmt.Println(string(pRows[0]["user_token"].([]byte)))
-	if len(pRows) > 0 && string(pRows[0]["user_token"].([]byte)) == token {
-		return true
-	}
-	fmt.Printf("token不对")
 	return false
 }
 
