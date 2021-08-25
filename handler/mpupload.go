@@ -4,6 +4,7 @@ import (
 	rPool "filestore-server/cache/redis"
 	"filestore-server/util"
 	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"math"
 	"net/http"
 	"os"
@@ -97,15 +98,19 @@ func CompleteUoloadHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	filehash := r.Form.Get("filehash")
 	uoloadId := r.Form.Get("uoloadId")
+	username := r.Form.Get("username")
 	//2.redis conn
 	rConn := rPool.RedisPool().Get()
-	//3.合并， copy 等方式
+
+	//3.判断每一块是否都上传
+	redis.Values()
+	//4.合并， copy 等方式
 	reply,err := rConn.Do("HGET","MP_"+uoloadId,"chunkcount")
 	for i := 0; i < 5; i++ {
 
 	}
 
-	//4.改redis里数据 的状态
+	//4.改 数据 的状态
 	rConn.Do("HDEL","MP_"+uoloadId)
 	//5.返回结果
 	w.Write(util.NewRespMsg(0,"OK",nil).JSONBytes())
