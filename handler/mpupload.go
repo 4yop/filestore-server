@@ -99,16 +99,24 @@ func CompleteUoloadHandler(w http.ResponseWriter, r *http.Request) {
 	filehash := r.Form.Get("filehash")
 	uoloadId := r.Form.Get("uoloadId")
 	username := r.Form.Get("username")
+	filesize,_ := strconv.Atoi(r.Form.Get("filesize"))
+	filename := r.Form.Get("filename")
 	//2.redis conn
 	rConn := rPool.RedisPool().Get()
 
 	//3.判断每一块是否都上传
-	redis.Values()
-	//4.合并， copy 等方式
-	reply,err := rConn.Do("HGET","MP_"+uoloadId,"chunkcount")
-	for i := 0; i < 5; i++ {
-
+	data,err := redis.Values(rConn.Do("HGETALL","MP_"+uoloadId))
+	if err != nil {
+		fmt.Printf("CompleteUoloadHandler redis.Values HGETALL MP_%s ,err:%s\n",uoloadId,err)
+		w.Write(util.NewRespMsg(-1,err.Error(),nil).JSONBytes())
+		return
 	}
+	total := 0
+	chunkcount := 0
+	
+
+	//4.合并， copy 等方式
+
 
 	//4.改 数据 的状态
 	rConn.Do("HDEL","MP_"+uoloadId)
