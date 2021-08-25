@@ -2,7 +2,9 @@
 
 while (true)
 {
+    echo "\n---------start-----------\n";
     `git pull`;
     `git add -A && git commit -m 'study-go' && git push`;
-    sleep(180);
+    echo "\n---------end-----------\n";
+    sleep(600);
 }
