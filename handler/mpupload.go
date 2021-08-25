@@ -2,6 +2,7 @@ package handler
 
 import (
 	rPool "filestore-server/cache/redis"
+	"filestore-server/db"
 	"filestore-server/util"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
@@ -9,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 type MulitPartUploadInfo struct {
@@ -111,14 +113,26 @@ func CompleteUoloadHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(util.NewRespMsg(-1,err.Error(),nil).JSONBytes())
 		return
 	}
-	total := 0
+	totalCount := 0
 	chunkcount := 0
-	
-
+	for i := 0; i < len(data); i++ {
+		k := string(data[i].([]byte))
+		v := string(data[i+1].([]byte))
+		if k == "chunkcount" {
+			totalCount,_ = strconv.Atoi(v)
+		}else if strings.HasPrefix(k,"chkidx_") && v == "1" {
+			chunkcount += 1
+		}
+	}
+	if totalCount != chunkcount {
+		w.Write(util.NewRespMsg(-2,"未传完所有块",nil).JSONBytes())
+	}
 	//4.合并， copy 等方式
 
 
 	//4.改 数据 的状态
+	db.OnFileUploadFinished(filehash,filename,int64(filesize),fileaddr)
+	db.OnUserFileUploadFinish()
 	rConn.Do("HDEL","MP_"+uoloadId)
 	//5.返回结果
 	w.Write(util.NewRespMsg(0,"OK",nil).JSONBytes())
