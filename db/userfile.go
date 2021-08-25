@@ -50,14 +50,13 @@ func QueryUserFileMeta (username string,limit int) ([]UserFile,error) {
 
 	var userfiles []UserFile
 	for rows.Next() {
-		userfile := UserFile{}
-		err = rows.Scan(&userfile.FileSha1,&userfile.FileSize,&userfile.FileName,&userfile.UploadAt,&userfile.LastUpdate)
-		fmt.Println(userfile)
+		ufile := UserFile{}
+		err = rows.Scan(&ufile.FileSha1,&ufile.FileSize,&ufile.FileName,&ufile.UploadAt,&ufile.LastUpdate)
 		if err != nil {
 			fmt.Printf(" QueryUserFileMeta rows.Scan err:%s\n",err)
 			return userfiles,err
 		}
-		userfiles = append(userfiles, userfile)
+		userfiles = append(userfiles, ufile)
 	}
 	return userfiles,nil
 }

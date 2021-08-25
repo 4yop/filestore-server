@@ -111,12 +111,17 @@ func DownloadHandler (w http.ResponseWriter,r *http.Request)  {
 	r.ParseForm()
 
 	filehash := r.Form.Get("filehash")
-	fMeta := meta.GetFileMeta(filehash)
-
+	fMeta,err := meta.GetFileMetaDb(filehash)
+	fmt.Println(fMeta)
+	if err != nil {
+		fmt.Printf("DownloadHandler meta.GetFileMetaDb err:%s\n",err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return;
+	}
 
 	file,err := os.Open(fMeta.Location)
 	if err != nil {
-		fmt.Println("文件打开失败:"+fMeta.Location)
+		fmt.Printf("DownloadHandler os.Open err:%s,loaction:%s\n",err,fMeta.Location)
 		w.WriteHeader(http.StatusInternalServerError)
 		return;
 	}
@@ -147,13 +152,69 @@ func FileQueryHandler (w http.ResponseWriter,r *http.Request) {
 	username := r.Form.Get("username")
 	limit, _ := strconv.Atoi(r.Form.Get("limit"))
 	userfiles,err := db.QueryUserFileMeta(username,limit)
-	fmt.Println(150,userfiles)
+	//fmt.Println(150,userfiles)
 	if err != nil {
-		resp := util.NewRespMsg(0,fmt.Sprintf("%s",err),userfiles)
+		resp := util.RespMsg{
+			Code: 0,
+			Msg:  fmt.Sprintf("%s", err),
+			Data: userfiles,
+		}
 		w.Write(resp.JSONBytes())
 	}else{
-		resp := util.NewRespMsg(0,"ok",userfiles)
+		resp := util.RespMsg{
+			Code: 0,
+			Msg:  "ok",
+			Data: userfiles,
+		}
 		w.Write(resp.JSONBytes())
 	}
 
+}
+
+
+// TryFastUploadHandler : 尝试秒传接口
+func TryFastUploadHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	// 1. 解析请求参数
+	username := r.Form.Get("username")
+	filehash := r.Form.Get("filehash")
+	filename := r.Form.Get("filename")
+	filesize, _ := strconv.Atoi(r.Form.Get("filesize"))
+
+	// 2. 从文件表中查询相同hash的文件记录
+	fileMeta, err := meta.GetFileMetaDb(filehash)
+	if err != nil {
+		fmt.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// 3. 查不到记录则返回秒传失败
+	if fileMeta.Location == "" {
+		resp := util.RespMsg{
+			Code: -1,
+			Msg:  "秒传失败，请访问普通上传接口",
+		}
+		w.Write(resp.JSONBytes())
+		return
+	}
+
+	// 4. 上传过则将文件信息写入用户文件表， 返回成功
+	suc := db.OnUserFileUploadFinish(
+		username, filehash,int64(filesize), filename)
+	if suc {
+		resp := util.RespMsg{
+			Code: 0,
+			Msg:  "秒传成功",
+		}
+		w.Write(resp.JSONBytes())
+		return
+	}
+	resp := util.RespMsg{
+		Code: -2,
+		Msg:  "秒传失败，请稍后重试",
+	}
+	w.Write(resp.JSONBytes())
+	return
 }
