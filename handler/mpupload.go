@@ -128,7 +128,26 @@ func CompleteUoloadHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(util.NewRespMsg(-2,"未传完所有块",nil).JSONBytes())
 	}
 	//4.合并， copy 等方式
-
+	tmpName := "./tmp/"+uoloadId+"-"+filehash+".tmp"
+	fd,err := os.Create(tmpName)
+	if err != nil {
+		w.Write(util.NewRespMsg(-2,err.Error(),nil).JSONBytes())
+		return;
+	}
+	defer fd.Close()
+	tmp := make([]byte,1024*1024)
+	for i := 0; i < totalCount; i++ {
+		chunkfile,_ := os.Open("./tmp/"+uoloadId+"/"+strconv.Itoa(i))
+		defer chunkfile.Close()
+		for  {
+			n,err := chunkfile.Read(tmp)
+			if err != nil  {
+				break
+			}
+			fd.Write(tmp[:n])
+		}
+	}
+	
 
 	//4.改 数据 的状态
 	db.OnFileUploadFinished(filehash,filename,int64(filesize),"fileaddr")
