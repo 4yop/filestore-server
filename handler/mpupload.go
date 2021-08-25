@@ -9,6 +9,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -63,8 +64,10 @@ func UploadPartHandler(w http.ResponseWriter, r *http.Request)  {
 	//2.reids conn
 	rConn := rPool.RedisPool().Get()
 	defer rConn.Close()
+	fpath := "./tmp/"+uoloadId+"/"+chunkIndex
+	os.MkdirAll(path.Dir(fpath),0744)
 	//3.获取文件句柄，存储区块内容
-	fd,err := os.Create("./tmp/"+uoloadId+"/"+chunkIndex)
+	fd,err := os.Create(fpath)
 	if err != nil {
 		fmt.Printf("UploadPartHandler os.Create:%s,err:%s\n","./tmp/"+uoloadId+"/"+chunkIndex,err)
 		w.Write(util.NewRespMsg(-1,err.Error(),nil).JSONBytes())
@@ -147,7 +150,11 @@ func CompleteUoloadHandler(w http.ResponseWriter, r *http.Request) {
 			fd.Write(tmp[:n])
 		}
 	}
-	
+	err = os.Rename(tmpName,"./tmp/"+filename)
+	if err != nil {
+		w.Write(util.NewRespMsg(-1,err.Error(),nil).JSONBytes())
+		return ;
+	}
 
 	//4.改 数据 的状态
 	db.OnFileUploadFinished(filehash,filename,int64(filesize),"fileaddr")

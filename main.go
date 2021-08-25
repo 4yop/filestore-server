@@ -30,6 +30,20 @@ func main () {
 	http.HandleFunc("/file/query",handler.FileQueryHandler)
 
 
+	// 秒传接口
+	http.HandleFunc("/file/fastupload", handler.HTTPInterceptor(
+		handler.TryFastUploadHandler))
+
+
+
+	// 分块上传接口
+	http.HandleFunc("/file/mpupload/init",
+		handler.HTTPInterceptor(handler.InitMulitPartUploadHandler))
+	http.HandleFunc("/file/mpupload/uppart",
+		handler.HTTPInterceptor(handler.UploadPartHandler))
+	http.HandleFunc("/file/mpupload/complete",
+		handler.HTTPInterceptor(handler.CompleteUoloadHandler))
+
 
 	err := http.ListenAndServe(":8080",nil)
 	if err != nil {
