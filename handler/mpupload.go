@@ -131,8 +131,8 @@ func CompleteUoloadHandler(w http.ResponseWriter, r *http.Request) {
 
 
 	//4.改 数据 的状态
-	db.OnFileUploadFinished(filehash,filename,int64(filesize),fileaddr)
-	db.OnUserFileUploadFinish()
+	db.OnFileUploadFinished(filehash,filename,int64(filesize),"fileaddr")
+	db.OnUserFileUploadFinish(username,filehash,int64(filesize),filename)
 	rConn.Do("HDEL","MP_"+uoloadId)
 	//5.返回结果
 	w.Write(util.NewRespMsg(0,"OK",nil).JSONBytes())
