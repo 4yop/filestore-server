@@ -163,3 +163,18 @@ func CompleteUoloadHandler(w http.ResponseWriter, r *http.Request) {
 	//5.返回结果
 	w.Write(util.NewRespMsg(0,"OK",nil).JSONBytes())
 }
+
+//取消上传
+func CancelUploadHandler (w http.ResponseWriter,r *http.Request) {
+	//1.删除分块
+	//2.删除redis状态
+	//3.更新mysql
+	//4.返回结果
+}
+
+//上传状态
+func MulitPartUploadHandler (w http.ResponseWriter,r *http.Request) {
+	//检查分块是否有效
+	//获取分块初始化信息
+	//获取已上传的分块信息
+}

@@ -44,6 +44,12 @@ func main () {
 	http.HandleFunc("/file/mpupload/complete",
 		handler.HTTPInterceptor(handler.CompleteUoloadHandler))
 
+	http.HandleFunc("/file/mpupload/cancel",
+		handler.HTTPInterceptor(handler.CancelUploadHandler))
+
+	http.HandleFunc("/file/mpupload/status",
+		handler.HTTPInterceptor(handler.MulitPartUploadHandler))
+
 
 	err := http.ListenAndServe(":8080",nil)
 	if err != nil {
